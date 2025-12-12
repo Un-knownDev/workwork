@@ -93,6 +93,16 @@ class WorkWork(wx.Frame):
         self.timerText.SetFont(font)
         self.timerText.SetForegroundColour((0,0,0))
 
+        # load custom image
+    image_path = "./my_image.png"   # <-- replace with your image file
+    if os.path.isfile(image_path):
+        img = wx.Image(image_path, wx.BITMAP_TYPE_ANY)
+        img = img.Scale(100, 100, wx.IMAGE_QUALITY_HIGH)  # optional scaling
+        self.customImage = wx.StaticBitmap(self.pnl, bitmap=wx.Bitmap(img))
+    else:
+        self.customImage = wx.StaticBitmap(self.pnl)  # empty placeholder
+
+      
         # create MENU button and style
         self.menuBtn = plateBtn.PlateButton(self, label="MENU", style=plateBtn.PB_STYLE_SQUARE)
         self.menuBtn.Bind(wx.EVT_BUTTON, self.ShowMenu)
@@ -126,10 +136,22 @@ class WorkWork(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnExit)
 
         # create sizer to manage layout
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(self.timerText, wx.SizerFlags().Align(wx.ALIGN_CENTER_VERTICAL).Border(wx.LEFT, 4))
-        sizer.Add(self.menuBtn, wx.SizerFlags().Align(wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL).Border(wx.LEFT, 4))
-        self.pnl.SetSizer(sizer)
+        mainSizer = wx.BoxSizer(wx.VERTICAL)
+
+        # row 1: timer + menu button
+        topSizer = wx.BoxSizer(wx.HORIZONTAL)
+        topSizer.Add(self.timerText, wx.SizerFlags().Align(wx.ALIGN_CENTER_VERTICAL).Border(wx.LEFT, 4))
+        topSizer.Add(self.menuBtn, wx.SizerFlags().Align(wx.ALIGN_CENTER_VERTICAL).Border(wx.LEFT, 4))
+
+        # row 2: image centered
+        imgSizer = wx.BoxSizer(wx.HORIZONTAL)
+        imgSizer.Add(self.customImage, 0, wx.ALIGN_CENTER | wx.ALL, 5)
+
+        # add rows to main sizer
+        mainSizer.Add(topSizer, 0, wx.ALIGN_CENTER_HORIZONTAL)
+        mainSizer.Add(imgSizer, 0, wx.ALIGN_CENTER_HORIZONTAL)
+
+        self.pnl.SetSizer(mainSizer)
         self.pnl.Fit()
 
         # create stopwatch and timer to trigger updates
